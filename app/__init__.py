@@ -1,0 +1,1 @@
+"""Hifazat application package."""

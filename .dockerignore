@@ -1,0 +1,15 @@
+.venv
+venv
+__pycache__
+*.pyc
+*.db
+*.sqlite3
+.env
+.pytest_cache
+.ruff_cache
+.git
+docs
+screenshots
+tests
+README.md
+ARCHITECTURE.md

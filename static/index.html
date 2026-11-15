@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hifazat — حفاظت · Fraud Guard</title>
+  <meta name="description" content="Personal finance tracking with an explainable fraud detection engine." />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Auth screen -->
+  <section id="auth-view" class="view">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-mark">ح</div>
+        <div>
+          <h1>Hifazat</h1>
+          <p class="brand-sub">حفاظت — your money, guarded</p>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Sign in</button>
+        <button class="tab" data-tab="register">Sign up</button>
+      </div>
+      <form id="auth-form" autocomplete="on">
+        <label>
+          <span>Email</span>
+          <input id="auth-email" type="email" required placeholder="you@example.com" />
+        </label>
+        <label id="name-field" class="hidden">
+          <span>Name</span>
+          <input id="auth-name" type="text" maxlength="120" placeholder="Your name" />
+        </label>
+        <label>
+          <span>Password</span>
+          <input id="auth-password" type="password" required minlength="8" placeholder="••••••••" />
+        </label>
+        <button id="auth-submit" class="btn btn-primary" type="submit">Sign in</button>
+        <p class="demo-hint">Demo: <code>demo@hifazat.pk</code> / <code>demo12345</code></p>
+      </form>
+      <p id="auth-error" class="error hidden"></p>
+    </div>
+  </section>
+
+  <!-- App shell -->
+  <section id="app-view" class="view hidden">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-mark small">ح</div>
+        <span>Hifazat</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="dashboard">Home</button>
+        <button class="nav-btn" data-view="transactions">Activity</button>
+        <button class="nav-btn" data-view="alerts">Alerts <span id="alert-badge" class="badge hidden">0</span></button>
+        <button class="nav-btn" data-view="insights">Insights</button>
+      </nav>
+      <button id="logout-btn" class="btn-ghost" title="Sign out">⏻</button>
+    </header>
+
+    <main class="content">
+      <!-- Dashboard -->
+      <section id="dashboard-view" class="page">
+        <div class="page-head">
+          <div>
+            <h2>Good morning, <span id="user-name">…</span></h2>
+            <p class="muted">Here's what's happening with your money.</p>
+          </div>
+          <button id="open-new-tx" class="btn btn-primary">+ Transaction</button>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <span class="kpi-label">Balance</span>
+            <span id="kpi-balance" class="kpi-value">—</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-label">Open alerts</span>
+            <span id="kpi-alerts" class="kpi-value warn">—</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-label">At risk</span>
+            <span id="kpi-risk" class="kpi-value">—</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi-label">Flag rate</span>
+            <span id="kpi-flagrate" class="kpi-value">—</span>
+          </div>
+        </div>
+
+        <div class="columns">
+          <div class="card">
+            <h3>Recent activity</h3>
+            <ul id="recent-list" class="tx-list"></ul>
+          </div>
+          <div class="card">
+            <h3>Latest alerts</h3>
+            <ul id="latest-alerts" class="alert-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions -->
+      <section id="transactions-view" class="page hidden">
+        <div class="page-head">
+          <div>
+            <h2>Activity</h2>
+            <p class="muted">Every transaction, scored in real time.</p>
+          </div>
+        </div>
+        <ul id="tx-list" class="tx-list full"></ul>
+      </section>
+
+      <!-- Alerts -->
+      <section id="alerts-view" class="page hidden">
+        <div class="page-head">
+          <div>
+            <h2>Alerts</h2>
+            <p class="muted">Each alert lists the exact reasons behind its score.</p>
+          </div>
+        </div>
+        <div class="alert-stats">
+          <div class="stat"><span id="stat-open">0</span> open</div>
+          <div class="stat"><span id="stat-ack">0</span> acknowledged</div>
+          <div class="stat"><span id="stat-resolved">0</span> resolved</div>
+          <div class="stat danger"><span id="stat-fraud">0</span> confirmed fraud</div>
+        </div>
+        <ul id="alert-list" class="alert-list full"></ul>
+      </section>
+
+      <!-- Insights -->
+      <section id="insights-view" class="page hidden">
+        <div class="page-head">
+          <div>
+            <h2>Insights</h2>
+            <p class="muted">Where the money goes, and what looks off.</p>
+          </div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><span class="kpi-label">This week</span><span id="ins-week" class="kpi-value">—</span></div>
+          <div class="kpi"><span class="kpi-label">vs last week</span><span id="ins-change" class="kpi-value">—</span></div>
+          <div class="kpi"><span class="kpi-label">Avg transaction</span><span id="ins-avg" class="kpi-value">—</span></div>
+          <div class="kpi"><span class="kpi-label">Top category</span><span id="ins-top" class="kpi-value">—</span></div>
+        </div>
+        <div class="columns">
+          <div class="card">
+            <h3>By category</h3>
+            <div id="category-bars" class="bars"></div>
+          </div>
+          <div class="card">
+            <h3>Recurring spend</h3>
+            <ul id="recurring-list" class="tx-list"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <!-- Transaction modal -->
+  <div id="tx-modal" class="modal hidden">
+    <div class="modal-card">
+      <h3>New transaction</h3>
+      <form id="tx-form">
+        <label><span>Amount (PKR)</span><input id="tx-amount" type="number" min="1" step="0.01" required /></label>
+        <label><span>Merchant</span><input id="tx-merchant" maxlength="160" placeholder="e.g. Imtiaz Super Store" /></label>
+        <label><span>Category</span>
+          <select id="tx-category">
+            <option>groceries</option><option>utilities</option><option>transport</option>
+            <option>dining</option><option>shopping</option><option>fuel</option>
+            <option>health</option><option>mobile</option><option>other</option>
+          </select>
+        </label>
+        <label><span>City</span><input id="tx-city" maxlength="120" placeholder="Karachi" /></label>
+        <label><span>Country</span><input id="tx-country" maxlength="120" value="Pakistan" /></label>
+        <label><span>Channel</span>
+          <select id="tx-channel"><option>card</option><option>bank</option><option>eft</option></select>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="tx-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Alert reason modal -->
+  <div id="reason-modal" class="modal hidden">
+    <div class="modal-card">
+      <h3>Why this alert?</h3>
+      <div id="reason-body"></div>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="reason-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/static/api.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
